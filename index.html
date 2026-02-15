@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обратная связь</title>
+    <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <div class="form-header">
+                <h1>Обратная связь</h1>
+                <p>Помогите нам стать лучше</p>
+            </div>
+
+            <div id="formContent">
+                <!-- Форма будет здесь -->
+            </div>
+
+            <div id="status" class="status-message"></div>
+
+            <div class="actions">
+                <button id="exportBtn" class="export-btn">Экспорт в CSV</button>
+                <button id="clearBtn" class="export-btn">Удаление отзывов</button>
+            </div>
+
+            <div id="feedbackList" class="feedback-list">
+                <h2>Последние отзывы:</h2>
+                <div id="feedbackItems"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./src/main.js"></script>
+</body>
+</html>
