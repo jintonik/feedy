@@ -1,6 +1,7 @@
 
 ### Structure
 
+``` text
 feedy/
 ├── public/
 │   └── favicon.ico
@@ -12,3 +13,4 @@ feedy/
 │   └── main.js
 ├── package.json
 └── vite.config.js
+```
