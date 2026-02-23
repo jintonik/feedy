@@ -1,4 +1,3 @@
-
 ### Structure
 
 ``` text
@@ -14,3 +13,10 @@ feedy/
 ├── package.json
 └── vite.config.js
 ```
+
+### Build and run
+
+``` bash
+npm build
+```
+
