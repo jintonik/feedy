@@ -30,8 +30,12 @@ class FeedbackApp {
   async loadCurrentForm() {
     try {
       const config = await this.formBuilder.loadForm(this.currentFormId);
-      const formHTML = this.formBuilder.createFormHTML(config);
-      document.getElementById('formContent').innerHTML = formHTML;
+      const formElement = this.formBuilder.createFormHTML(config);
+      const formContent = document.getElementById('formContent');
+      if (formElement && formContent) {
+        formContent.replaceChildren();
+        formContent.appendChild(formElement);
+      }
 
       // Применяем тему
       this.formBuilder.applyTheme(config.theme);
