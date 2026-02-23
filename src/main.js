@@ -5,7 +5,6 @@ import CsvUtils from './utils/CsvUtility.js';
 import StorageManager from './utils/StorageManager.js';
 import StatusManager from './components/StatusManager.js'
 
-// основной класс приложения
 class FeedbackApp {
   constructor() {
     this.formBuilder = new FormBuilder();
@@ -37,10 +36,8 @@ class FeedbackApp {
         formContent.appendChild(formElement);
       }
 
-      // Применяем тему
       this.formBuilder.applyTheme(config.theme);
 
-      // Перезагружаем обработчики событий
       this.setupEventListeners();
 
     } catch (error) {
@@ -50,7 +47,6 @@ class FeedbackApp {
   }
 
   setupEventListeners() {
-    // Обработчик отправки формы
     const form = document.getElementById('dynamicForm');
     const submitBtn = document.getElementById('submitBtn');
 
@@ -59,24 +55,19 @@ class FeedbackApp {
     }
   }
 
-  // Добавляем кнопку очистки данных
   setupClearButton() {
     const clearBtn = document.getElementById('clearBtn');
     clearBtn.style.backgroundColor = '#f44336'; // Красный цвет
-
     clearBtn.addEventListener('click', () => this.clearAllFeedbacks());
   }
 
-  // Добавляем кнопку экспорта
   setupExportButton() {
-    // Обработчик экспорта
     const exportBtn = document.getElementById('exportBtn');
     if (exportBtn) {
       exportBtn.addEventListener('click', () => this.exportToCSV());
     }
   }
 
-  // Метод очистки всех отзывов
   clearAllFeedbacks() {
     if (confirm('Вы уверены, что хотите удалить ВСЕ отзывы? Это действие нельзя отменить.')) {
       try {
@@ -96,7 +87,6 @@ class FeedbackApp {
     importBtn.className = 'export-btn';
     importBtn.textContent = 'Импорт формы из JSON';
 
-    // Добавляем скрытый input для выбора файла
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = '.json';
@@ -109,7 +99,6 @@ class FeedbackApp {
 
     importBtn.addEventListener('click', () => fileInput.click());
 
-    // Вставляем кнопку перед формой
     formContainer.insertBefore(importBtn, document.getElementById('formContent'));
     formContainer.appendChild(fileInput);
   }
@@ -119,15 +108,12 @@ class FeedbackApp {
       const content = await file.text();
       const formConfig = JSON.parse(content);
 
-      // Валидация формы
       if (!this.validateFormConfig(formConfig)) {
         throw new Error('Неверный формат формы');
       }
 
-      // Сохраняем импортированную форму
       this.importManager.importedForms.set(formConfig.id, formConfig);
 
-      // Добавляем в список доступных форм
       this.importManager.availableForms.set(formConfig.id, {
         name: formConfig.title,
         id: formConfig.id,
@@ -150,28 +136,23 @@ class FeedbackApp {
   async handleFormSubmit(e) {
     e.preventDefault();
 
-    // Валидация формы
     if (!this.formBuilder.validateForm()) {
       StatusManager.showStatus('Пожалуйста, заполните все обязательные поля', 'error');
       return;
     }
 
-    // Получаем данные формы
     const formData = this.formBuilder.getFormData();
     formData.timestamp = new Date().toISOString();
 
-    // Отключаем кнопку во время отправки
     const submitBtn = document.getElementById('submitBtn');
     submitBtn.classList.add('loading');
     submitBtn.disabled = true;
 
     try {
-      // Сохраняем локально
       StorageManager.saveFeedback(formData);
       StatusManager.showStatus('Отзыв успешно сохранен!', 'success');
       this.formBuilder.resetForm();
 
-      // Обновляем список отзывов
       this.loadFeedbacks();
 
     } catch (error) {
@@ -189,21 +170,20 @@ class FeedbackApp {
 
   loadFeedbacks() {
     try {
-      // Получаем отзывы из localStorage
-      const feedbacks = StorageManager.getAllFeedback();
+      const feedbacks = JSON.parse(localStorage.getItem('feedbacks') || '[]');
       this.feedbackData = feedbacks;
 
-      // Очищаем текущий список
       const feedbackItems = document.getElementById('feedbackItems');
       if (!feedbackItems) return;
 
-      feedbackItems.innerHTML = '';
+      feedbackItems.replaceChildren();
 
-      // Показываем последние 10 отзывов
       const recentFeedbacks = feedbacks.slice(-10);
 
       if (recentFeedbacks.length === 0) {
-        feedbackItems.innerHTML = '<p>Пока нет отзывов</p>';
+        const p = document.createElement('p');
+        p.textContent = 'Пока нет отзывов';
+        feedbackItems.appendChild(p);
         return;
       }
 
@@ -211,7 +191,31 @@ class FeedbackApp {
         const item = document.createElement('div');
         item.className = 'feedback-item';
 
-        // Форматируем дату
+        const h3 = document.createElement('h3');
+        h3.textContent = feedback.name || 'Аноним';
+        item.appendChild(h3);
+
+        if (feedback.message) {
+          const messageP = document.createElement('p');
+
+          const strong = document.createElement('strong');
+          strong.textContent = 'Отзыв:';
+
+          const textNode = document.createTextNode(' ' + feedback.message.substring(0, 100));
+
+          if (feedback.message.length > 100) {
+            const ellipsis = document.createTextNode('...');
+            messageP.appendChild(strong);
+            messageP.appendChild(textNode);
+            messageP.appendChild(ellipsis);
+          } else {
+            messageP.appendChild(strong);
+            messageP.appendChild(textNode);
+          }
+
+          item.appendChild(messageP);
+        }
+
         const date = new Date(feedback.timestamp);
         const formattedDate = date.toLocaleDateString('ru-RU', {
           day: '2-digit',
@@ -221,18 +225,14 @@ class FeedbackApp {
           minute: '2-digit'
         });
 
-        // Создаем HTML для отзыва
-        let content = `<h3>${feedback.name || 'Аноним'}</h3>`;
+        const dateP = document.createElement('p');
+        dateP.className = 'date';
+        dateP.textContent = formattedDate;
+        item.appendChild(dateP);
 
-        if (feedback.message) {
-          content += `<p><strong>Отзыв:</strong> ${feedback.message.substring(0, 100)}${feedback.message.length > 100 ? '...' : ''}</p>`;
-        }
-
-        content += `<p class="date">${formattedDate}</p>`;
-
-        item.innerHTML = content;
         feedbackItems.appendChild(item);
       });
+
     } catch (error) {
       console.error('Ошибка загрузки отзывов:', error);
       StatusManager.showStatus('Ошибка загрузки отзывов', 'error');
@@ -244,8 +244,6 @@ class FeedbackApp {
     StatusManager.showStatus(result.message, result.type);
   }
 }
-
-// Инициализация приложения
 document.addEventListener('DOMContentLoaded', () => {
   new FeedbackApp();
 });
