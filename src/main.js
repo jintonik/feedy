@@ -1,4 +1,5 @@
 import FormBuilder from './components/FormBuilder.js'
+import UIComponents from './components/UIComponents.js';
 import ImportManager from './components/ImportManager.js';
 import CsvUtility from './utils/CsvUtility.js';
 import CsvUtils from './utils/CsvUtility.js';
@@ -29,7 +30,7 @@ class FeedbackApp {
   async loadCurrentForm() {
     try {
       const config = await this.formBuilder.loadForm(this.currentFormId);
-      const formElement = this.formBuilder.createFormHTML(config);
+      const formElement = UIComponents.createForm(config);
       const formContent = document.getElementById('formContent');
       if (formElement && formContent) {
         formContent.replaceChildren();

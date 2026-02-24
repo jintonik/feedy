@@ -1,5 +1,3 @@
-import UIComponents from '../components/UIComponents';
-
 export default class FormBuilder {
     constructor() {
     this.currentForm = null;
@@ -59,10 +57,6 @@ export default class FormBuilder {
         }
       };
     }
-  }
-
-  createFormHTML(config) {
-    return UIComponents.createForm(config);
   }
 
   applyTheme(theme) {
