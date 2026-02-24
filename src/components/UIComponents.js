@@ -1,3 +1,10 @@
+const FIELD_VALIDATION_CONSTANTS = {
+  NAME_MAX_LENGTH: 50,
+  EMAIL_MAX_LENGTH: 100,
+  MESSAGE_MAX_LENGTH: 2000,
+  DEFAULT_MAX_LENGTH: 500
+};
+
 export default class UIComponents {
   static createTextInput(field) {
     const div = document.createElement('div');
@@ -17,8 +24,16 @@ export default class UIComponents {
     if (field.placeholder) {
       input.placeholder = field.placeholder;
     }
-    div.appendChild(input);
 
+    if (field.id === 'name') {
+      input.maxLength = FIELD_VALIDATION_CONSTANTS.NAME_MAX_LENGTH;
+    } else if (field.id === 'email') {
+      input.maxLength = FIELD_VALIDATION_CONSTANTS.EMAIL_MAX_LENGTH;
+    } else {
+      input.maxLength = FIELD_VALIDATION_CONSTANTS.DEFAULT_MAX_LENGTH;
+    }
+
+    div.appendChild(input);
     return div;
   }
 
@@ -30,17 +45,24 @@ export default class UIComponents {
     h3.textContent = `${field.label}${field.required ? ' *' : ''}`;
     div.appendChild(h3);
 
-    const textArea = document.createElement('textarea');
-    textArea.id = field.id;
-    textArea.name = field.id;
+    const textarea = document.createElement('textarea');
+    textarea.id = field.id;
+    textarea.name = field.id;
     if (field.required) {
-      textArea.required = true;
+      textarea.required = true;
     }
     if (field.placeholder) {
-      textArea.placeholder = field;
+      textarea.placeholder = field;
     }
-    textArea.rows = 4;
-    div.appendChild(textArea);
+    textarea.rows = 4;
+
+    if (field.id === 'message') {
+      textarea.maxLength = FIELD_VALIDATION_CONSTANTS.MESSAGE_MAX_LENGTH;
+    } else {
+      textarea.maxLength = FIELD_VALIDATION_CONSTANTS.DEFAULT_MAX_LENGTH;
+    }
+
+    div.appendChild(textarea);
 
     return div;
   }

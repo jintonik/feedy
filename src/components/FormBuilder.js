@@ -11,7 +11,7 @@ export default class FormBuilder {
     try {
       const response = await fetch(`./src/custom-forms/${formId}-form.json`);
       if (!response.ok) {
-        throw new Error(`Форма ${formId} не найдена`);
+        throw new Error(`Форма ${formId} не найдена: ${response.status}`);
       }
       this.formConfig = await response.json();
       return this.formConfig;
@@ -24,9 +24,14 @@ export default class FormBuilder {
   async loadDefaultForm() {
     try {
       const response = await fetch('./src/custom-forms/default-form.json');
+      if (!response.ok) {
+        throw new Error(`Ошибка загрузки формы: ${response.status}`)
+      }
+
       this.formConfig = await response.json();
       return this.formConfig;
     } catch (error) {
+      console.error('Ошибка загрзки формы по умолчанию:', error)
       return {
         id: 'default',
         title: 'Форма обратной связи',
