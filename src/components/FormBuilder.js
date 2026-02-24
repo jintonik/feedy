@@ -1,4 +1,4 @@
-import UIComponents from './UIComponents';
+import UIComponents from '../components/UIComponents';
 
 export default class FormBuilder {
     constructor() {
